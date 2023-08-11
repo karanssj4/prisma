@@ -556,6 +556,7 @@ export class DataProxyEngine extends Engine<DataProxyTxInfoPayload> {
       try {
         return await args.callback({ logHttpCall })
       } catch (e) {
+        console.log('!!! Retry after error', e)
         if (!(e instanceof DataProxyError)) throw e
         if (!e.isRetryable) throw e
         if (attempt >= MAX_RETRIES) {

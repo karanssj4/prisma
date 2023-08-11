@@ -85,6 +85,7 @@ declare let prisma: PrismaClient
 declare let newPrismaClient: NewPrismaClient<typeof PrismaClient>
 
 let inMemorySpanExporter: InMemorySpanExporter
+let processor: SimpleSpanProcessor
 
 beforeAll(() => {
   const contextManager = new AsyncHooksContextManager().enable()
@@ -99,7 +100,8 @@ beforeAll(() => {
     }),
   })
 
-  basicTracerProvider.addSpanProcessor(new SimpleSpanProcessor(inMemorySpanExporter))
+  processor = new SimpleSpanProcessor(inMemorySpanExporter)
+  basicTracerProvider.addSpanProcessor(processor)
   basicTracerProvider.register()
 
   registerInstrumentations({
@@ -135,11 +137,7 @@ testMatrix.setupTestSuite(({ provider }, suiteMeta, clientMeta) => {
   }
 
   async function waitForSpanTree(): Promise<Tree> {
-    /*
-      Spans come through logs and sometimes these tests can be flaky without
-      giving some buffer
-    */
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await processor.forceFlush()
 
     const spans = inMemorySpanExporter.getFinishedSpans()
     const rootSpan = spans.find((span) => !span.parentSpanId) as ReadableSpan

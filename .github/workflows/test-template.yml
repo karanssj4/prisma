@@ -218,7 +218,7 @@ jobs:
           node-version: ${{ matrix.node }}
           pnpm-version: ${{ inputs.pnpmVersion }}
 
-      - run: pnpm run test:functional --data-proxy --shard ${{ matrix.shard }}
+      - run: pnpm run test:functional --data-proxy --shard ${{ matrix.shard }} tracing/
         working-directory: packages/client
         env:
           TEST_FUNCTIONAL_POSTGRES_URI: 'postgres://prisma:prisma@localhost:5432/PRISMA_DB_NAME'
@@ -231,7 +231,7 @@ jobs:
           JEST_JUNIT_SUITE_NAME: 'client/functional'
           JEST_JUNIT_UNIQUE_OUTPUT_NAME: true
 
-      - run: pnpm run test:functional --data-proxy --edge-client --shard ${{ matrix.shard }}
+      - run: pnpm run test:functional --data-proxy --edge-client --shard ${{ matrix.shard }} tracing/
         working-directory: packages/client
         env:
           TEST_FUNCTIONAL_POSTGRES_URI: 'postgres://prisma:prisma@localhost:5432/PRISMA_DB_NAME'
